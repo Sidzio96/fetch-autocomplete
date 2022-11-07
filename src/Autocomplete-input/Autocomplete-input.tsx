@@ -8,14 +8,26 @@ import * as S from './Autocomplete-input.styles';
 const AutocompleteInput:React.FC = () => {
     const [value, setValue] = React.useState<string>('');
     const [results, setResults] = React.useState<string[]>([]);
+    function useDebounce(values: any, wait = 300) {
+        const [debounceValue, setDebounceValue] = React.useState(values);
+        React.useEffect(() => {
+            const timer = setTimeout(() => {
+                setDebounceValue(values);
+            }, wait);
+            return () => clearTimeout(timer);
+        }, [values, wait]);
+        return debounceValue;
+    }
+    const debounceInput = useDebounce(value);
+
+
     React.useEffect(() => {
-        const api = async () => {
-            const data = await fetch(`https://jsonplaceholder.typicode.com/todos?q=${value}`);
-            const jsonData = await data.json();
-            setResults(jsonData);
-        };
-        api();
-    }, [value]);
+        fetch(`https://jsonplaceholder.typicode.com/todos?q=${debounceInput}`)
+            .then(jsonData => jsonData.json())
+            .then(jsonData => {
+                setResults(jsonData)
+            });
+    },[debounceInput]);
 
     const handleSearch = (value: string) => {
         let result: any
@@ -43,7 +55,9 @@ const AutocompleteInput:React.FC = () => {
         );
     })
 
-    const options = [{label: renderItem2}];
+    const options = [{
+        value: renderItem2
+    }];
 
     return (
         <div>
@@ -61,6 +75,7 @@ const AutocompleteInput:React.FC = () => {
                             handleSearch(extractContent(value));
                         }}
                         style={{ width: 250 }}
+                        notFoundContent={'No content'}
                         value={value === 'undefined' ? '' : value}
                         options={options}
                     >
