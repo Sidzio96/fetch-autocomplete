@@ -47,7 +47,7 @@ const AutocompleteInput:React.FC = () => {
         span.innerHTML = str;
         return span.textContent || span.innerText;
     };
-    const renderItem2 = results.map((result: any) => {
+    const renderItem = results.map((result: any) => {
         return (
             <div key={result.toString()}>
                 <span style={{ fontWeight: 400 }}>{JSON.stringify(result.title)}</span>
@@ -56,7 +56,7 @@ const AutocompleteInput:React.FC = () => {
     })
 
     const options = [{
-        value: renderItem2
+        value: renderItem
     }];
 
     return (
